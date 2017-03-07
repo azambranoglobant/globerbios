@@ -1,74 +1,54 @@
 function SlidesBuilder() {
 
-    this.buildContent = function(profileData, profileSlide, templatePresentationId) {
+    this.buildContent = function(profileData, templateSlideContent) {
+        // STEP1: Slide content validation.
+        if (templateSlideContent == undefined || templateSlideContent.pageElements == undefined) 
+            return [];
+        
         // TODO: Wrong place to invoke the photo info.
         var photoFile = PhotoRepository.findPhotoByEmail(profileData.email);
-        var slideId = profileSlide.objectId;
-        
-        var photoRequestsdataBios,
-            textRequestsdataBios;
 
-        //TODO: Wrong place to extract variables. Should go deeper.
-        var fullName = profileData.fullName;
-        var description = profileData.description;
-        var role = profileData.role;
-        var seniority = profileData.seniority;
-        var yearsOfExp = profileData.yearsOfExp;
-        var generalRole = profileData.generalRole;
-        var languages = profileData.languages;
-        var tools = profileData.tools;
+        var contentChanges = [];
 
-        var slideContent = SlidesRepository.getSlide(templatePresentationId, slideId);
+        for (i = 0; i < templateSlideContent.pageElements.length; i++) {
+            
+            var element = templateSlideContent.pageElements[i];
+            
+            var elementPhotoRequest = (photoFile == undefined) ? undefined : SlidesRepository.getUpdateImageRequest(templateSlideContent.objectId, element, photoFile.id);
+            if(elementPhotoRequest  !== undefined) contentChanges.push(elementPhotoRequest);
 
-        //TODO: Poor error handling. Using error as an error code.
-        if (slideContent == undefined || slideContent.pageElements == undefined) 
-            return undefined;
-        
-        for (i = 0; i < slideContent.pageElements.length; i++) {
-            var element = slideContent.pageElements[i];
-            var title = element.title;
-
-            var thisElementPhotoRequest = (photoFile == undefined)
-                ? undefined
-                : SlidesRepository.getUpdateImageRequest(slideId, element, photoFile.id);
-
-            var thisElementTextRequest = getTextUpdateRequests(element, fullName, role, seniority, description, yearsOfExp, generalRole, languages, tools);
-            textRequestsdataBios = (textRequestsdataBios == undefined)
-                ? thisElementTextRequest
-                : textRequestsdataBios.concat(thisElementTextRequest);
-            photoRequestsdataBios = (photoRequestsdataBios == undefined)
-                ? thisElementPhotoRequest
-                : photoRequestsdataBios.concat(thisElementPhotoRequest);
+            var elementTextRequest = getTextUpdateRequests(element, profileData);
+            if(elementTextRequest !== undefined) contentChanges = contentChanges.concat(elementTextRequest);
         }
 
-        return {
-            requests: (photoRequestsdataBios == undefined)
-                ? textRequestsdataBios
-                : photoRequestsdataBios.concat(textRequestsdataBios)
-        };
+        return contentChanges;
     }
 
-    function getTextUpdateRequests(element, fullName, role, seniority, description, yearsOfExp, generalRole, languages, tools) {
+    function getTextUpdateRequests(element, profileData) {
+
         var textRequests;
         if (element.shape != undefined && element.shape.text != undefined && element.shape.shapeType == 'TEXT_BOX') {
 
             for (j = 0; j < element.shape.text.textElements.length; j++) {
                 var textElement = element.shape.text.textElements[j];
                 if (textElement.textRun != undefined) {
-                    var variable = textElement.textRun.content.trim().toUpperCase();
+                    var placeHolderText = textElement.textRun.content.trim().toUpperCase();
                     var currentRequest = undefined;
                     var startIndex = textElement, startIndex;
                     if (startIndex == undefined) 
                         startIndex = 0;
                     
-                    //TODO: Understand and remove this comment: 
+                    // TODO: Understand and remove this comment: 
                     // use the parent element or the textElement?
 
-                    switch (variable) {
+                    switch (placeHolderText) {
                         case '[FULLNAME]':
-                            currentRequest = SlidesRepository.getUpdateTextRequest(element, fullName);
+                            currentRequest = SlidesRepository.getUpdateTextRequest(element, profileData.fullName);
                             break;
                         case '[ROLE]':
+                            var role = profileData.role;
+                            var seniority = profileData.seniority;
+
                             var roleSeniority = role;
                             if (seniority != role) 
                                 roleSeniority += '\n' + seniority;
@@ -81,19 +61,21 @@ function SlidesBuilder() {
                         */
                         case '[TEXTDESCRIPTION]':
                         case '[ABSTRACT]':
-                            currentRequest = SlidesRepository.getUpdateTextRequest(element, description);
+                            currentRequest = SlidesRepository.getUpdateTextRequest(element, profileData.description);
                             break;
                             /*
                         // Funciona pero borra el campo
                         case '[YEARSOFEXPERIENCE]':
+                        var yearsOfExp = profileData.yearsOfExp;
                         currentRequest = getUpdateTextRequest(element, yearsOfExp);
                         break;
                         case '[GENERALROLE]':
+                        var generalRole = profileData.generalRole;
                         currentRequest = getUpdateTextRequest(element, generalRole);
                         break;
                         */
                         case '[LANGUAGES]':
-                            currentRequest = SlidesRepository.getUpdateTextRequest(element, languages);
+                            currentRequest = SlidesRepository.getUpdateTextRequest(element, profileData.languages);
                             break;
                             /*
                         case '[KEYASPECTS]':

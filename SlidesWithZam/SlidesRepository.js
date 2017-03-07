@@ -80,7 +80,7 @@ var SlidesRepository = (function () {
     }
 
     function updateSlides(presentationId, formData) {
-        if (formData == undefined) 
+        if (formData == undefined || formData.length <= 0) 
             throw new Error('Invalid form data');
         
         var url = 'https://slides.googleapis.com/v1/presentations/' + presentationId + ':batchUpdate';
@@ -88,7 +88,7 @@ var SlidesRepository = (function () {
         var params = {
             method: 'post',
             contentType: 'application/json',
-            payload: JSON.stringify(formData),
+            payload: JSON.stringify({ requests: formData }),
             headers: {
                 'Authorization': 'Bearer ' + ScriptApp.getOAuthToken()
             },

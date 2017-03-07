@@ -1,4 +1,4 @@
-function Sliderifier2(sliderifyConfig) {
+function Sliderifier(sliderifyConfig) {
     this.sliderifyConfig = sliderifyConfig;
 
     this.sliderifyConfig = {
@@ -17,8 +17,9 @@ function Sliderifier2(sliderifyConfig) {
         var presentation = SlidesRepository.getPresentation(presentationFileInfo.id);
 
         // Step 2: Create content for the profileSlide.
-        var profileSlide = this.sliderifyConfig.getProfileSlide(presentation);
-        var contentChanges = this.builder.buildContent(profileData, profileSlide, this.sliderifyConfig.presentationTemplateId);
+        var profileSlide = this.sliderifyConfig.getProfileSlide(presentation); 
+        var templateSlideContent = SlidesRepository.getSlide(templatePresentationId, profileSlide.objectId);
+        var contentChanges = this.builder.buildContent(profileData, templateSlideContent);
 
         // Step 3: Apply content Changes to the prepared presentation.
         SlidesRepository.sendSlideRequest(presentationFileInfo.id, contentChanges);
