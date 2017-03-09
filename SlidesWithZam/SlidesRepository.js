@@ -76,7 +76,8 @@ var SlidesRepository = (function () {
             }
         };
 
-        var resp = UrlFetchApp.fetch(url, params);
+        var response = UrlFetchApp.fetch(url, params);
+        return JSON.parse(response.getContentText());
     }
 
     function updateSlides(presentationId, formData) {
