@@ -13,7 +13,7 @@ function GloberBios() {
        email: 'Email'
      };
   
-  var profileData = spreadSheetRepo.getDataByRowIndex(talentPoolMetadata, 2);
+  var profileData = spreadSheetRepo.getDataByRowIndexNamed(talentPoolMetadata, 2);
   
   var sliderifyConfig = {
         presentationTemplateId: '1b6vvDjqakVt32e3W0RGYA6lvByTAImy8-fAmbnX3d8Y',
@@ -28,21 +28,31 @@ function GloberBios() {
 }
 
 function TeamBios(){
-  var spreadSheetRepo = new SpreadsheetRepository({id: '1FOgt6rkq9fIFU_woYhTHw6wro__egIlPg-8ckfsmlGQ', lookupSheetIndex: 0, titleRowIndex: 0});
-  var talentPoolMetadata = {
-       id: 'Glober ID',
-       fullName: 'First Name',
-       description: 'Last Name',
-       role: 'Role',
-       seniority: 'Seniority',
-       yearsOfExp: '6',
-       generalRole: 'Role',
-       languages: 'Javascript, C# and Python',
-       tools: 'Visual Studio',
-       email: 'Email'
-     };
   
-  var profileData = spreadSheetRepo.getDataByRowIndex(talentPoolMetadata, 2);
+  var spreadSheetRepo = new SpreadsheetRepository({id: '11L1gTFhAGpxEic_w6zuAiDrVZT3Guq-FuNnTrGu42es', 
+                                                  lookupSheetIndex: 0, 
+                                                  titleRowIndex: 0});
+  
+  var teamMetaData = {
+    email: 0,
+    fullName: 1,
+    role: 2,
+    teamRole: 3
+  };
+  
+  var spreadSheetRepo2 = new SpreadsheetRepository({id: '11L1gTFhAGpxEic_w6zuAiDrVZT3Guq-FuNnTrGu42es', 
+                                                  lookupSheetIndex: 1, 
+                                                  titleRowIndex: 0});
+  
+  var teamInfoData = {
+    teamName: 0,
+    requestedBy: 1
+  };
+  
+  var teamInfo = spreadSheetRepo2.getDataByRowIndex(teamInfoData, 1);
+  
+  teamInfo.date = 'March 2017';
+  teamInfo.team = spreadSheetRepo.getAllDataRows(teamMetaData);
   
   var teamConfig = {
         presentationTemplateId: '1QWGD0dy-OGtdW_8iZo-hIVhuMjbCe-NLObxJ_AjgVEg',
@@ -50,25 +60,5 @@ function TeamBios(){
     };
   
   var sliderifier = new Sliderifier(teamConfig);
-  sliderifier.sliderifyTeam();
-}
-
-function Test(){
-  var spreadSheetRepo = new SpreadsheetRepository({id: '16yR0xcLovu-8OMR7TMLJih6SgviAYdD5mUYtpL8o9cY', 
-                                                  lookupSheetIndex: 0, 
-                                                  titleRowIndex: 0, 
-                                                  emailColumnIndex: 1});
-  var talentPoolMetadata = {
-       id: 0,
-       email: 1,
-       career: 2,
-       programmingLanguages: 3,
-       databases: 5,
-       tools: 12,
-       english: 13,
-       spanish: 15
-     };
-  
-  Logger.log(spreadSheetRepo.getDataByEmail(talentPoolMetadata, 'andrea.duran@globant.com'));
-  Logger.log(spreadSheetRepo.getDataByEmail(talentPoolMetadata, 'hernan.garcia@globant.com'));
+  sliderifier.sliderifyTeam(teamInfo);
 }

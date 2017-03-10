@@ -20,7 +20,7 @@ function SpreadsheetRepository(spreadsheetConfig) {
       }
     }
 
-    throw new Error('Inexistent data for email ' + email);
+    throw new Error('Inexistent data for value ' + value);
   }
 
   this.getDataByEmail = function(metaData, email) {
@@ -39,6 +39,23 @@ function SpreadsheetRepository(spreadsheetConfig) {
   }
 
   this.getDataByRowIndex = function(metaData, rowIndex) {
+    if(rowIndex >= dataValues.length || rowIndex < 0) {
+      throw new Error('Inexistent data for row ' + rowIndex);
+    }
+
+    var resultObj = {};
+
+    for (var property in metaData) {
+      if (metaData.hasOwnProperty(property)) {
+        var propertyIndex = metaData[property];
+        resultObj[property] = dataValues[rowIndex][propertyIndex];
+      }
+    }
+
+    return resultObj;
+  }
+
+  this.getDataByRowIndexNamed = function(metaData, rowIndex) {
     
     if(rowIndex >= dataValues.length || rowIndex < 0) {
       throw new Error('Inexistent data for row ' + rowIndex);
@@ -58,6 +75,25 @@ function SpreadsheetRepository(spreadsheetConfig) {
     }
 
     return resultObj;
+  }
+
+  this.getAllDataRows = function(metaData) {
+    var dataRows = [];
+
+    for (var rowIndex = titleRowIndex + 1; rowIndex < dataValues.length; rowIndex++) {
+      var resultObj = {};
+
+      for (var property in metaData) {
+        if (metaData.hasOwnProperty(property)) {
+          var columnIndex = metaData[property];    
+          resultObj[property] = dataValues[rowIndex][columnIndex];
+        }
+      }
+
+      dataRows.push(resultObj);
+    }
+
+    return dataRows;
   }
 
   loadSpreadSheetDataValues();

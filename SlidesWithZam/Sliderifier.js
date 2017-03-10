@@ -15,15 +15,41 @@ function Sliderifier(sliderifyConfig) {
 
         // Step 3: Apply content Changes to the prepared presentation.
         SlidesRepository.sendSlideRequest(presentationFileInfo.id, contentChanges);
+
+        return presentationFileInfo.id;
     }
 
-    this.sliderifyTeam = function() {
+    var mergeTeamAndGlobantProfile = function(team) {
+        var spreadSheetRepo = new SpreadsheetRepository({id: '16yR0xcLovu-8OMR7TMLJih6SgviAYdD5mUYtpL8o9cY', 
+                                                  lookupSheetIndex: 0, 
+                                                  titleRowIndex: 0, 
+                                                  emailColumnIndex: 1});
 
-        var profiles = [{id: 1, fullName: 'Alan Zambrano', description: 'Developer', role: 'Web UI', seniority: 'SSr', languages: 'C#', email: 'alan.zambrano@globant.com'}, 
-                        {id: 2, fullName: 'Lucia Echenique', description: 'Developer', role: 'Web UI', seniority: 'SSr', languages: 'Java', email: 'lucia.echenique@globant.com'}, 
-                        {id: 3, fullName: 'Bruno Guardia', description: 'Tech Director', role: 'Tech Director', seniority: 'Level5', languages: '.NET', email: 'bruno.guardia@globant.com'}];
+        var globantProfileMetadata = {
+            id: 0,
+            email: 1,
+            career: 2,
+            tools: 12
+        };
 
-        // Step 1: Prepare new Presentation.
+        var reloadedProfiles = [];
+
+        for(i = 0; i < team.length; i++) {
+            var globerProfile = spreadSheetRepo.getDataByEmail(globantProfileMetadata, team[i].email);
+            var mergedProfile = merge(team[i], globerProfile);
+
+            reloadedProfiles.push(mergedProfile);
+        }
+
+        return reloadedProfiles;
+    }
+
+    this.sliderifyTeam = function(teamBiosData) {
+
+        // Step 1: Load Profile information.
+        var profiles = mergeTeamAndGlobantProfile(teamBiosData.team);
+
+        // Step 2: Prepare new Presentation.
         var presentationFileInfo = DriveRepository.copyFile(this.sliderifyConfig.presentationTemplateId, this.sliderifyConfig.presentationTitle);
         var presentation = SlidesRepository.getPresentation(presentationFileInfo.id);
         var slideToDuplicateId = presentation.slides[1].objectId;
@@ -35,22 +61,40 @@ function Sliderifier(sliderifyConfig) {
 
         SlidesRepository.sendSlideRequest(presentationFileInfo.id, [{deleteObject: { objectId: slideToDuplicateId }}] );
 
-        // Step 2: Prepare team slide.
+        // Step 3: Prepare team slide.
+        var coverMetadata = [{placeholder: '[TEAM NAME]', replacement: teamBiosData.teamName}, 
+                            {placeholder: '[PRESENTATION DATE]', replacement: teamBiosData.date}];
         var teamSlideContent = SlidesRepository.getSlide(presentationFileInfo.id, presentation.slides[0].objectId);
         var textUpdater = new TextUpdater(teamSlideContent);
-        var textChangesForTeamSlide = [];
-        textChangesForTeamSlide.push(textUpdater.generateRequest('[TEAM NAME]', 'AGILE POD'));
-        textChangesForTeamSlide.push(textUpdater.generateRequest('[PRESENTATION DATE]', 'March 2017'));
-
+        var textChangesForTeamSlide = textUpdater.generate(coverMetadata);
+        
         SlidesRepository.sendSlideRequest(presentationFileInfo.id, textChangesForTeamSlide);
 
+        // Step 4: Prepare team members slides.
         for(var i = 0; i < profiles.length; i++) {
-             // Step 3: Get Slide content.
+             // Step 4.1: Get Slide content.
             var templateSlideContent = SlidesRepository.getSlide(presentationFileInfo.id, profiles[i].objectId);
-            var contentChanges = this.builder.buildContent(profiles[i], templateSlideContent);
+            
+            var profileMetaData = [{placeholder: '[FULLNAME]', replacement: profiles[i].fullName}, 
+                                {placeholder: '[ROLE]', replacement: profiles[i].teamRole},
+                                {placeholder: '[TECH]', replacement: profiles[i].role},
+                                {placeholder: '[ABSTRACT]', replacement: profiles[i].career},
+                                {placeholder: '[KEYASPECTS]', replacement: profiles[i].tools}];
 
-            // Step 4: Apply content Changes to the slide.
+            var textUpdater = new TextUpdater(templateSlideContent);
+            var contentChanges = textUpdater.generate(profileMetaData);
+            
+            // Step 4.2 Create photo update request
+            var photoFile = PhotoRepository.findPhotoByEmail(profiles[i].email);
+            var photoUpdater = new ProfilePhotoUpdater(templateSlideContent);
+            var photoUpdateRequest = photoUpdater.generate(photoFile);
+
+            if(photoUpdateRequest !== null) contentChanges.push(photoUpdateRequest);
+
+            // Step 4.3: Apply content Changes to the slide.
             SlidesRepository.sendSlideRequest(presentationFileInfo.id, contentChanges);
         }
+
+        return presentationFileInfo.id;
     }
 }
