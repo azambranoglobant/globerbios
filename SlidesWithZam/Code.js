@@ -56,9 +56,15 @@ function TeamBios(){
   
   var teamConfig = {
         presentationTemplateId: '1QWGD0dy-OGtdW_8iZo-hIVhuMjbCe-NLObxJ_AjgVEg',
-        presentationTitle: 'Team Bios Test 1'
+        presentationTitle: 'Team Bios ' + teamInfo.teamName
     };
   
   var sliderifier = new Sliderifier(teamConfig);
-  sliderifier.sliderifyTeam(teamInfo);
+  
+  var presentationId = sliderifier.sliderifyTeam(teamInfo);
+  Logger.log(presentationId);
+  var attachmentFile = DriveApp.getFileById(presentationId);
+  Logger.log(attachmentFile);
+  
+  MailApp.sendEmail(teamInfo.requestedBy, 'Team Bios Example', 'Here you will find your requested Team Bios Slides', {name: 'Team Bios App', attachments: [attachmentFile]});
 }
