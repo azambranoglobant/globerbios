@@ -1,16 +1,44 @@
 function SpreadsheetRepository(spreadsheetConfig) {
   
-  var spreadsheetId = spreadsheetConfig.id;
-  var lookupSheetIndex = spreadsheetConfig.lookupSheetIndex;
   var titleRowIndex = spreadsheetConfig.titleRowIndex;
+  var dataValues = null;
   
+  var loadSpreadSheetDataValues = function() {
+    if(dataValues === null) {
+      var ssheet = SpreadsheetApp.openById(spreadsheetConfig.id);
+      var sheets = ssheet.getSheets();
+      var globersSheet = sheets[spreadsheetConfig.lookupSheetIndex];
+      var dataRange = globersSheet.getDataRange();
+      dataValues = dataRange.getValues();
+    }
+  }
+
+  var findRowIndexByValueInColumn = function(value, columnIndex) {
+    for (var i = titleRowIndex + 1; i < dataValues.length; i++) {
+      if(dataValues[i][columnIndex] === value) {
+        return i;
+      }
+    }
+
+    throw new Error('Inexistent data for email ' + email);
+  }
+
+  this.getDataByEmail = function(metaData, email) {
+    var dataRowIndex = findRowIndexByValueInColumn(email, spreadsheetConfig.emailColumnIndex);
+      
+    var resultObj = {};
+
+    for (var property in metaData) {
+      if (metaData.hasOwnProperty(property)) {
+        var propertyIndex = metaData[property];
+        resultObj[property] = dataValues[dataRowIndex][propertyIndex];
+      }
+    }
+
+    return resultObj;
+  }
+
   this.getDataByRowIndex = function(metaData, rowIndex) {
-    
-    var ssheet = SpreadsheetApp.openById(spreadsheetId);
-    var sheets = ssheet.getSheets();
-    var globersSheet = sheets[lookupSheetIndex];
-    var dataRange = globersSheet.getDataRange();
-    var dataValues = dataRange.getValues();
     
     if(rowIndex >= dataValues.length || rowIndex < 0) {
       throw new Error('Inexistent data for row ' + rowIndex);
@@ -19,24 +47,18 @@ function SpreadsheetRepository(spreadsheetConfig) {
    var resultObj = {};
     
     for(var property in metaData) {
-      
-      if(metaData.hasOwnProperty(property)){
-        
+      if(metaData.hasOwnProperty(property)) {
         for (var columnIndex = 0; columnIndex < dataValues[titleRowIndex].length; columnIndex++) {
-          
           if(dataValues[titleRowIndex][columnIndex] === metaData[property]) {
-            
             resultObj[property] = dataValues[rowIndex][columnIndex];
             break;
           }
-          
         }
-        
       }
-      
     }
-    
+
     return resultObj;
-    
   }
+
+  loadSpreadSheetDataValues();
 }

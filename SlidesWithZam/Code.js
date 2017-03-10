@@ -52,3 +52,23 @@ function TeamBios(){
   var sliderifier = new Sliderifier(teamConfig);
   sliderifier.sliderifyTeam();
 }
+
+function Test(){
+  var spreadSheetRepo = new SpreadsheetRepository({id: '16yR0xcLovu-8OMR7TMLJih6SgviAYdD5mUYtpL8o9cY', 
+                                                  lookupSheetIndex: 0, 
+                                                  titleRowIndex: 0, 
+                                                  emailColumnIndex: 1});
+  var talentPoolMetadata = {
+       id: 0,
+       email: 1,
+       career: 2,
+       programmingLanguages: 3,
+       databases: 5,
+       tools: 12,
+       english: 13,
+       spanish: 15
+     };
+  
+  Logger.log(spreadSheetRepo.getDataByEmail(talentPoolMetadata, 'andrea.duran@globant.com'));
+  Logger.log(spreadSheetRepo.getDataByEmail(talentPoolMetadata, 'hernan.garcia@globant.com'));
+}
