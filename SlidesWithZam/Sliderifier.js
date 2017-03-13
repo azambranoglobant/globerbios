@@ -29,7 +29,20 @@ function Sliderifier(sliderifyConfig) {
             id: 0,
             email: 1,
             career: 2,
-            tools: 12
+            programming: 3,
+            jsFrameworks: 4,
+            databases: 5,
+            mvcFrameworkds: 6,
+            presentation: 7,
+            mobile: 8,
+            bigData: 9,
+            testing: 10,
+            other: 11,
+            tools: 12,
+            english: 13,
+            spanish: 15,
+            portuguese: 16,
+            otherlanguages: 17
         };
 
         var reloadedProfiles = [];
@@ -79,7 +92,7 @@ function Sliderifier(sliderifyConfig) {
                                 {placeholder: '[ROLE]', replacement: profiles[i].teamRole},
                                 {placeholder: '[TECH]', replacement: profiles[i].role},
                                 {placeholder: '[ABSTRACT]', replacement: profiles[i].career},
-                                {placeholder: '[KEYASPECTS]', replacement: profiles[i].tools}];
+                                {placeholder: '[KEYASPECTS]', replacement: getKeyAspectsText(profiles[i])}];
 
             var textUpdater = new TextUpdater(templateSlideContent);
             var contentChanges = textUpdater.generate(profileMetaData);
@@ -96,5 +109,63 @@ function Sliderifier(sliderifyConfig) {
         }
 
         return presentationFileInfo.id;
+    }
+
+    var getKeyAspectsText = function(profile){
+        
+        var keyAspectsText = '';
+        
+        var profileLanguages = [
+            {title: 'English', level: profile.english}, 
+            {title: 'Spanish', level: profile.spanish},
+            {title: 'Portuguese', level: profile.portuguese},
+            {title: 'Other', level: profile.otherlanguages}
+            ];
+
+        keyAspectsText = getLanguagesText(profileLanguages);
+
+        var keyAspects = [
+            {title: 'Programming languages: ', aspect: profile.programming},
+            {title: 'Javascript Frameworks: ', aspect: profile.jsFrameworks},
+            {title: 'Databases: ', aspect: profile.databases},
+            {title: 'MVC Frameworks: ', aspect: profile.mvcFrameworkds},          
+            {title: 'Presentation Layers: ', aspect: profile.presentation},          
+            {title: 'Mobile Development: ', aspect: profile.mobile},          
+            {title: 'Big Data Tools: ', aspect: profile.bigData},     
+            {title: 'Testing Tools: ', aspect: profile.testing},          
+            {title: 'Other Technologies:', aspect: profile.other},      
+            {title: 'Tools: ', aspect: profile.tools},            
+        ];
+
+        for(var i = 0; i < keyAspects.length; i++){
+            var aspect = keyAspects[i].aspect;
+            var title = keyAspects[i].title;
+            
+            if(aspect != undefined && aspect != ''){
+                keyAspectsText += '\n' + title + aspect;
+            }
+        }
+        
+        return keyAspectsText;
+    }
+
+    var getLanguagesText = function(profileLanguages) {
+        var languages = '';
+
+        for(var i=0; i < profileLanguages.length; i++) {
+            var currentLanguage = profileLanguages[i].level;
+            var languageTitle = profileLanguages[i].title;
+            
+            if(currentLanguage != undefined && currentLanguage != '' && currentLanguage != 'N/A'){
+                
+                if(languages.length > 0 ){
+                    languages += ',';
+                }
+
+                languages += languageTitle + ' (' + currentLanguage + ')';
+            }
+        }
+
+        return languages;
     }
 }
