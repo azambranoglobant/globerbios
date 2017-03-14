@@ -1,3 +1,4 @@
+//TODO: Refactor this code into an integration test for the 'GenerateGloberBios' purpose.
 function GloberBios() {
   var spreadSheetRepo = new SpreadsheetRepository({id: '1FOgt6rkq9fIFU_woYhTHw6wro__egIlPg-8ckfsmlGQ', lookupSheetIndex: 0, titleRowIndex: 0});
   var talentPoolMetadata = {
@@ -27,6 +28,7 @@ function GloberBios() {
   sliderifier.sliderifyGlober(profileData);
 }
 
+//TODO: Refactor this code into an integration test for the 'GenerateTeamBios' purpose.
 function TeamBios(){
   
   var spreadSheetRepo = new SpreadsheetRepository({id: '11L1gTFhAGpxEic_w6zuAiDrVZT3Guq-FuNnTrGu42es', 

@@ -3,6 +3,7 @@ function Sliderifier(sliderifyConfig) {
 
     this.builder = new SlidesBuilder();
 
+    // TODO: Refactor this method into a GloberSliderifier class.
     this.sliderifyGlober = function(profileData) {
         // Step 1: Prepare new Presentation.
         var presentationFileInfo = DriveRepository.copyFile(this.sliderifyConfig.presentationTemplateId, this.sliderifyConfig.presentationTitle);
@@ -47,6 +48,7 @@ function Sliderifier(sliderifyConfig) {
 
         var reloadedProfiles = [];
 
+        //TODO: Move this for one abstraction level up.
         for(i = 0; i < team.length; i++) {
             var globerProfile = spreadSheetRepo.getDataByEmail(globantProfileMetadata, team[i].email);
             var mergedProfile = merge(team[i], globerProfile);
@@ -57,6 +59,7 @@ function Sliderifier(sliderifyConfig) {
         return reloadedProfiles;
     }
 
+    // TODO: Refactor this method into a TeamSliderifier class.
     this.sliderifyTeam = function(teamBiosData) {
 
         // Step 1: Load Profile information.
@@ -159,7 +162,7 @@ function Sliderifier(sliderifyConfig) {
             if(currentLanguage != undefined && currentLanguage != '' && currentLanguage != 'N/A'){
                 
                 if(languages.length > 0 ){
-                    languages += ',';
+                    languages += ', ';
                 }
 
                 languages += languageTitle + ' (' + currentLanguage + ')';

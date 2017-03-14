@@ -1,3 +1,4 @@
+//TODO: Delete this code when the Sliderifier.sliderifyGlober method gets refactored.
 function SlidesBuilder() {
 
     this.buildContent = function(profileData, templateSlideContent) {

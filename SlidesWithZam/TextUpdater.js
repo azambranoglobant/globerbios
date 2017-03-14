@@ -1,3 +1,4 @@
+//TODO: Rename to reflect the 'request generator' purpose.
 function TextUpdater(slideContent) {
 
     var findMetadataForPlaceHolder = function(metadata, placeHolder){

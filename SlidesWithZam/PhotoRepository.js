@@ -1,3 +1,4 @@
+// TODO: Rename to reflect the 'Photo directory API/service' style.
 var PhotoRepository = (function () {
 
     var PHOTO_FOLDER_ID = '0B5Pvk3zKcgb0bnM1UjA1M2ZvdzQ';

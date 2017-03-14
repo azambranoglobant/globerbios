@@ -1,3 +1,4 @@
+// TODO: Rename to reflect the 'GDrive API/service' style.
 var DriveRepository = (function(){
 
     var baseUrl = 'https://www.googleapis.com/drive/v3/files/';

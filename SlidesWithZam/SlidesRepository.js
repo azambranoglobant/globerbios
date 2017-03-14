@@ -125,7 +125,7 @@ var SlidesRepository = (function () {
     }
 
     /**
-     * TODO: Move or refactor. Out of the abstraction.
+     * TODO: Move or refactor. Out of the abstraction. 
      */
     var getUpdateImageRequest = function (slideId, element, googleDriveFile) {
 

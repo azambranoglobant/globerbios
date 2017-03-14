@@ -1,3 +1,4 @@
+//TODO: Rename to reflect the 'request generator' purpose.
 function ProfilePhotoUpdater(slideContent) {
     this.generate = function(photoFile) {
 
