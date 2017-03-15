@@ -1,21 +1,5 @@
 //TODO: Refactor this code into an integration test for the 'GenerateGloberBios' purpose.
 function GloberBios() {
-  var spreadSheetRepo = new SpreadsheetRepository({id: '1FOgt6rkq9fIFU_woYhTHw6wro__egIlPg-8ckfsmlGQ', lookupSheetIndex: 0, titleRowIndex: 0});
-  var talentPoolMetadata = {
-       id: 'Glober ID',
-       fullName: 'First Name',
-       description: 'Last Name',
-       role: 'Role',
-       seniority: 'Seniority',
-       yearsOfExp: '6',
-       generalRole: 'Role',
-       languages: 'Javascript, C# and Python',
-       tools: 'Visual Studio',
-       email: 'Email'
-     };
-  
-  var profileData = spreadSheetRepo.getDataByRowIndexNamed(talentPoolMetadata, 2);
-  
   var sliderifyConfig = {
         presentationTemplateId: '1b6vvDjqakVt32e3W0RGYA6lvByTAImy8-fAmbnX3d8Y',
         presentationTitle: 'Bios for Alan Zambrano',
@@ -25,7 +9,7 @@ function GloberBios() {
     };
   
   var sliderifier = new Sliderifier(sliderifyConfig);
-  sliderifier.sliderifyGlober(profileData);
+  sliderifier.sliderifyGlober('alan.zambrano@globant.com');
 }
 
 //TODO: Refactor this code into an integration test for the 'GenerateTeamBios' purpose.
@@ -37,9 +21,8 @@ function TeamBios(){
   
   var teamMetaData = {
     email: 0,
-    fullName: 1,
-    role: 2,
-    teamRole: 3
+    techRole: 1,
+    teamRole: 2
   };
   
   var spreadSheetRepo2 = new SpreadsheetRepository({id: '11L1gTFhAGpxEic_w6zuAiDrVZT3Guq-FuNnTrGu42es', 

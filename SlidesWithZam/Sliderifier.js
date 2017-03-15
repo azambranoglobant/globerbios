@@ -1,69 +1,56 @@
 function Sliderifier(sliderifyConfig) {
     this.sliderifyConfig = sliderifyConfig;
 
-    this.builder = new SlidesBuilder();
+    this.profileInfoService = new ProfileInfoService();
 
     // TODO: Refactor this method into a GloberSliderifier class.
-    this.sliderifyGlober = function(profileData) {
-        // Step 1: Prepare new Presentation.
+    this.sliderifyGlober = function(email) {
+
+        // Step 1: Load Profile information.
+        var profileData = profileInfoService.getGloberCompleteProfile(email);
+
+        // Step 2: Prepare new Presentation.
         var presentationFileInfo = DriveRepository.copyFile(this.sliderifyConfig.presentationTemplateId, this.sliderifyConfig.presentationTitle);
         var presentation = SlidesRepository.getPresentation(presentationFileInfo.id);
 
-        // Step 2: Create content for the profileSlide.
+        // Step 3: Create content for the profileSlide. (???)
         var profileSlide = this.sliderifyConfig.getProfileSlide(presentation); 
+        // Step 3.1: Get Slide content.
         var templateSlideContent = SlidesRepository.getSlide(this.sliderifyConfig.presentationTemplateId, profileSlide.objectId);
-        var contentChanges = this.builder.buildContent(profileData, templateSlideContent);
+        
+        // Step 3.2 Create text update requests.
+        var profileMetaData = [{placeholder: '[FULLNAME]', replacement: profileData.fullName}, 
+                            {placeholder: '[ROLE]', replacement: profileData.fullRole},
+                            {placeholder: '[ABSTRACT]', replacement: profileData.career},
+                            {placeholder: '[LANGUAGES]', replacement: getKeyAspectsText(profileData)}];
 
-        // Step 3: Apply content Changes to the prepared presentation.
+        var textUpdater = new TextUpdater(templateSlideContent);
+        var contentChanges = textUpdater.generate(profileMetaData);
+
+        // Step 3.3 Create photo update request
+        var photoFile = PhotoRepository.findPhotoByEmail(profileData.email);
+        var photoUpdater = new ProfilePhotoUpdater(templateSlideContent);
+        var photoUpdateRequest = photoUpdater.generate(photoFile);
+
+        if(photoUpdateRequest !== null) contentChanges.push(photoUpdateRequest);
+
+        // Step 4: Apply content Changes to the prepared presentation.
         SlidesRepository.sendSlideRequest(presentationFileInfo.id, contentChanges);
 
         return presentationFileInfo.id;
-    }
-
-    var mergeTeamAndGlobantProfile = function(team) {
-        var spreadSheetRepo = new SpreadsheetRepository({id: '16yR0xcLovu-8OMR7TMLJih6SgviAYdD5mUYtpL8o9cY', 
-                                                  lookupSheetIndex: 0, 
-                                                  titleRowIndex: 0, 
-                                                  emailColumnIndex: 1});
-
-        var globantProfileMetadata = {
-            id: 0,
-            email: 1,
-            career: 2,
-            programming: 3,
-            jsFrameworks: 4,
-            databases: 5,
-            mvcFrameworkds: 6,
-            presentation: 7,
-            mobile: 8,
-            bigData: 9,
-            testing: 10,
-            other: 11,
-            tools: 12,
-            english: 13,
-            spanish: 15,
-            portuguese: 16,
-            otherlanguages: 17
-        };
-
-        var reloadedProfiles = [];
-
-        //TODO: Move this for one abstraction level up.
-        for(i = 0; i < team.length; i++) {
-            var globerProfile = spreadSheetRepo.getDataByEmail(globantProfileMetadata, team[i].email);
-            var mergedProfile = merge(team[i], globerProfile);
-
-            reloadedProfiles.push(mergedProfile);
-        }
-
-        return reloadedProfiles;
     }
 
     // TODO: Refactor this method into a TeamSliderifier class.
     this.sliderifyTeam = function(teamBiosData) {
 
         // Step 1: Load Profile information.
-        var profiles = mergeTeamAndGlobantProfile(teamBiosData.team);
+        var team = teamBiosData.team;
+        var profiles = [];
+        for(i = 0; i < team.length; i++) {
+            var globerProfile = profileInfoService.getGloberCompleteProfile(team[i].email);
+            var mergedProfile = merge(team[i], globerProfile);
+            profiles.push(mergedProfile);
+        }
 
         // Step 2: Prepare new Presentation.
         var presentationFileInfo = DriveRepository.copyFile(this.sliderifyConfig.presentationTemplateId, this.sliderifyConfig.presentationTitle);
@@ -91,23 +78,24 @@ function Sliderifier(sliderifyConfig) {
              // Step 4.1: Get Slide content.
             var templateSlideContent = SlidesRepository.getSlide(presentationFileInfo.id, profiles[i].objectId);
             
+            // Step 4.2 Create text update requests.
             var profileMetaData = [{placeholder: '[FULLNAME]', replacement: profiles[i].fullName}, 
                                 {placeholder: '[ROLE]', replacement: profiles[i].teamRole},
-                                {placeholder: '[TECH]', replacement: profiles[i].role},
+                                {placeholder: '[TECH]', replacement: profiles[i].techRole},
                                 {placeholder: '[ABSTRACT]', replacement: profiles[i].career},
                                 {placeholder: '[KEYASPECTS]', replacement: getKeyAspectsText(profiles[i])}];
 
             var textUpdater = new TextUpdater(templateSlideContent);
             var contentChanges = textUpdater.generate(profileMetaData);
             
-            // Step 4.2 Create photo update request
+            // Step 4.3 Create photo update requests.
             var photoFile = PhotoRepository.findPhotoByEmail(profiles[i].email);
             var photoUpdater = new ProfilePhotoUpdater(templateSlideContent);
             var photoUpdateRequest = photoUpdater.generate(photoFile);
 
             if(photoUpdateRequest !== null) contentChanges.push(photoUpdateRequest);
 
-            // Step 4.3: Apply content Changes to the slide.
+            // Step 4.4: Apply content Changes to the slide.
             SlidesRepository.sendSlideRequest(presentationFileInfo.id, contentChanges);
         }
 
