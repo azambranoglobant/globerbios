@@ -1,7 +1,7 @@
 function Sliderifier(sliderifyConfig) {
     this.sliderifyConfig = sliderifyConfig;
 
-    this.profileInfoService = new ProfileInfoService();
+    var profileInfoService = new ProfileInfoService();
 
     // TODO: Refactor this method into a GloberSliderifier class.
     this.sliderifyGlober = function(email) {

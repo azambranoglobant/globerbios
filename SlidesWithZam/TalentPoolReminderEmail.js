@@ -1,4 +1,4 @@
-function TalentPoolReminderEmail(emailRecipients){
+function TalentPoolReminderEmail(){
 
     var getEmailBody = function (){
         
@@ -156,7 +156,7 @@ function TalentPoolReminderEmail(emailRecipients){
         return body;
     }
 
-    this.send = function(){
+    this.send = function(emailRecipients){
         var emailBody = getEmailBody();
 
         MailApp.sendEmail({
