@@ -1,7 +1,7 @@
 function ReminderScenario() {
 }
 
-ReminderScenario.prototype.talentPoolEmail = new TalentPoolReminderEmail();
+ReminderScenario.prototype.talentPoolEmail = {send: function(globersAsRecipients){ Logger.log(globersAsRecipients); }};
 
 ReminderScenario.prototype.run = function() {
     try {
@@ -24,10 +24,24 @@ ReminderScenario.prototype.getTalentPoolGlobers = function() {
         firstName: 1,
         lastName: 2,
         updatedCV: 25,
-        benchStart: 31
+        benchStart: 31,
+        lastCvReminder: 33
     };
 
-    return spreadSheetRepo.getAllDataRows(metaData);
+    var talentPoolGlobers = spreadSheetRepo.getAllDataRows(metaData);
+
+    var filteredGlobers = [];
+    for (var index = 0; index < talentPoolGlobers.length; index++) {
+        var glober = talentPoolGlobers[index];
+        var lastCVReminder = getDaysDiffFromNow(new Date(glober.lastCvReminder));
+
+        // TODO: Move the 30 days value to a constant.
+        if(lastCVReminder >= 30) {
+            filteredGlobers.push(glober);
+        }
+    }
+
+    return filteredGlobers;
 }
 
 ReminderScenario.prototype.mergeWithGlobantBiosProfile = function(glober) {
@@ -49,7 +63,16 @@ ReminderScenario.prototype.remindGlobers = function(globersNeedingCVReminder){
     var recipientsForReminderEmail = this.getGlobersAsEmailRecipients(globersNeedingCVReminder);
     this.talentPoolEmail.send(recipientsForReminderEmail);
 
-    //TODO: Update Talent Pool Spreadsheet.
+    var talentPoolSpreadSheet = new SpreadsheetRepository({id: '16yR0xcLovu-8OMR7TMLJih6SgviAYdD5mUYtpL8o9cY', 
+                                                lookupSheetIndex: 0, 
+                                                titleRowIndex: 0, 
+                                                emailColumnIndex: 1});
+
+    for (var globerIndex = 0; globerIndex < globersNeedingCVReminder.length; globerIndex++) {
+        var glober = globersNeedingCVReminder[globerIndex];
+        var timeStamp = new Date().toUTCString();
+        talentPoolSpreadSheet.updateCellForGlober(glober.email, { column: 33, value: timeStamp });
+    }
 }
 
 ReminderScenario.prototype.getGlobersAsEmailRecipients = function(pendingUpdateGlobers) {
