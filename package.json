@@ -1,0 +1,32 @@
+{
+  "name": "globerbios",
+  "version": "1.0.0",
+  "description": "A library used by Globant and it's Glow product to track and publish Glober's profiles.",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "tw": "jest --watch",
+    "coverage": "jest --coverage"
+  },
+  "author": "Alan Zambrano",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "babel-jest": "^19.0.0",
+    "jest-cli": "^19.0.2"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "collectCoverageFrom": [
+      "src/*.js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 100,
+        "functions": 100,
+        "lines": 100,
+        "statements": 100
+      }
+    }
+  }
+}

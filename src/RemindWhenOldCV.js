@@ -11,7 +11,7 @@ function RemindWhenOldGlowCV(){
                 filteredGlobers.push(glober);
             }
         }
-
+        
         return filteredGlobers;
     }
 }
