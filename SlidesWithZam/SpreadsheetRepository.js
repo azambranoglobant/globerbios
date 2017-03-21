@@ -1,14 +1,16 @@
+// module.exports = 
 function SpreadsheetRepository(spreadsheetConfig) {
   
   var titleRowIndex = spreadsheetConfig.titleRowIndex;
   var dataValues = null;
+  var dataRange = null;
   
   var loadSpreadSheetDataValues = function() {
     if(dataValues === null) {
       var ssheet = SpreadsheetApp.openById(spreadsheetConfig.id);
       var sheets = ssheet.getSheets();
       var globersSheet = sheets[spreadsheetConfig.lookupSheetIndex];
-      var dataRange = globersSheet.getDataRange();
+      dataRange = globersSheet.getDataRange();
       dataValues = dataRange.getValues();
     }
   }
@@ -21,6 +23,19 @@ function SpreadsheetRepository(spreadsheetConfig) {
     }
 
     throw new Error('Inexistent data for value ' + value);
+  }
+
+  var getColumnIndexByConfigProperty = function(cellColumnTitle) {
+    
+    for (var key in spreadsheetConfig) {
+      if (spreadsheetConfig.hasOwnProperty(key)) {
+        if(cellColumnTitle === key){
+          return spreadsheetConfig[key];
+        }
+      }
+    }
+
+    throw new Error('Inexistent column for title: ' + cellColumnTitle);
   }
 
   this.getDataByEmail = function(metaData, email) {
@@ -96,5 +111,13 @@ function SpreadsheetRepository(spreadsheetConfig) {
     return dataRows;
   }
 
+  this.updateCellForGlober = function(globerEmail, cellUpdate) {
+      var rowIndex = findRowIndexByValueInColumn(globerEmail, spreadsheetConfig.emailColumnIndex);
+      
+      var cell = dataRange.getCell(rowIndex + 1, cellUpdate.column);
+      cell.setValue(cellUpdate.value);
+  }
+
+  // TODO: Remove this side effect.
   loadSpreadSheetDataValues();
 }
