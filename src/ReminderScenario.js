@@ -25,7 +25,7 @@ ReminderScenario.prototype.getTalentPoolGlobers = function() {
         lastName: 2,
         updatedCV: 25,
         benchStart: 31,
-        lastCvReminder: 33
+        lastCvReminder: 32
     };
 
     var talentPoolGlobers = spreadSheetRepo.getAllDataRows(metaData);
@@ -36,7 +36,7 @@ ReminderScenario.prototype.getTalentPoolGlobers = function() {
         var lastCVReminder = getDaysDiffFromNow(new Date(glober.lastCvReminder));
 
         // TODO: Move the 30 days value to a constant.
-        if(lastCVReminder >= 30) {
+        if(lastCVReminder >= 30 || isNaN(lastCVReminder)) {
             filteredGlobers.push(glober);
         }
     }
@@ -63,10 +63,10 @@ ReminderScenario.prototype.remindGlobers = function(globersNeedingCVReminder){
     var recipientsForReminderEmail = this.getGlobersAsEmailRecipients(globersNeedingCVReminder);
     this.talentPoolEmail.send(recipientsForReminderEmail);
 
-    var talentPoolSpreadSheet = new SpreadsheetRepository({id: '16yR0xcLovu-8OMR7TMLJih6SgviAYdD5mUYtpL8o9cY', 
+    var talentPoolSpreadSheet = new SpreadsheetRepository({id: '1FOgt6rkq9fIFU_woYhTHw6wro__egIlPg-8ckfsmlGQ', 
                                                 lookupSheetIndex: 0, 
                                                 titleRowIndex: 0, 
-                                                emailColumnIndex: 1});
+                                                emailColumnIndex: 3});
 
     for (var globerIndex = 0; globerIndex < globersNeedingCVReminder.length; globerIndex++) {
         var glober = globersNeedingCVReminder[globerIndex];
