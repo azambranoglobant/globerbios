@@ -80,10 +80,12 @@ function Sliderifier(sliderifyConfig) {
             
             // Step 4.2 Create text update requests.
             var profileMetaData = [{placeholder: '[FULLNAME]', replacement: profiles[i].fullName}, 
-                                {placeholder: '[ROLE]', replacement: profiles[i].teamRole},
+                                {placeholder: '[ROLE]', replacement: profiles[i].teamRole + " " + profiles[i].seniority},
                                 {placeholder: '[TECH]', replacement: profiles[i].techRole},
+                                {placeholder: '[LOCATION]', replacement: profiles[i].location},
                                 {placeholder: '[ABSTRACT]', replacement: profiles[i].career},
-                                {placeholder: '[KEYASPECTS]', replacement: getKeyAspectsText(profiles[i])}];
+                                {placeholder: '[KEYASPECTS]', replacement: getKeyAspectsText(profiles[i])},
+                                {placeholder: '[QUOTE]', replacement: getQuoteForGlober(profiles[i])}];
 
             var textUpdater = new TextUpdater(templateSlideContent);
             var contentChanges = textUpdater.generate(profileMetaData);
@@ -101,7 +103,7 @@ function Sliderifier(sliderifyConfig) {
 
         return presentationFileInfo.id;
     }
-
+    
     var getKeyAspectsText = function(profile){
         
         var keyAspectsText = '';
@@ -158,5 +160,14 @@ function Sliderifier(sliderifyConfig) {
         }
 
         return languages;
+    }
+
+    var getQuoteForGlober = function (profile){
+        
+        if(profile.quote !== undefined && profile.quote !== ''){
+            return '"' + profile.quote + '"';
+        }
+
+        return '';
     }
 }

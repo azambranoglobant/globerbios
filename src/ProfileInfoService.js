@@ -30,7 +30,8 @@ function ProfileInfoService() {
             birthDate: 4,
             entryDate: 5,
             role: 6,
-            seniority: 7
+            seniority: 7,
+            location: 9
         };
 
         return spreadSheetRepo.getDataByEmail(talentPoolProfileMetadata, globerEmail);
