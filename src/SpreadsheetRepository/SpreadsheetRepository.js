@@ -1,13 +1,16 @@
-// module.exports = 
-function SpreadsheetRepository(spreadsheetConfig) {
+function SpreadsheetRepository(spreadsheetConfig, SpreadsheetAppService) {
   
-  var titleRowIndex = spreadsheetConfig.titleRowIndex;
   var dataValues = null;
   var dataRange = null;
   
+  // TODO: Add code for injecting SpreadsheetApp
+  // if(SpreadsheetApp !== undefined){
+  //   SpreadsheetAppService = SpreadsheetApp;
+  // }
+
   var loadSpreadSheetDataValues = function() {
     if(dataValues === null) {
-      var ssheet = SpreadsheetApp.openById(spreadsheetConfig.id);
+      var ssheet = SpreadsheetAppService.openById(spreadsheetConfig.id);
       var sheets = ssheet.getSheets();
       var globersSheet = sheets[spreadsheetConfig.lookupSheetIndex];
       dataRange = globersSheet.getDataRange();
@@ -16,6 +19,8 @@ function SpreadsheetRepository(spreadsheetConfig) {
   }
 
   var findRowIndexByValueInColumn = function(value, columnIndex) {
+    var titleRowIndex = spreadsheetConfig.titleRowIndex;
+    
     for (var i = titleRowIndex + 1; i < dataValues.length; i++) {
       if(dataValues[i][columnIndex] === value) {
         return i;
@@ -39,6 +44,7 @@ function SpreadsheetRepository(spreadsheetConfig) {
   }
 
   this.getDataByEmail = function(metaData, email) {
+    loadSpreadSheetDataValues();
     var dataRowIndex = findRowIndexByValueInColumn(email, spreadsheetConfig.emailColumnIndex);
       
     var resultObj = {};
@@ -54,6 +60,7 @@ function SpreadsheetRepository(spreadsheetConfig) {
   }
 
   this.getDataByRowIndex = function(metaData, rowIndex) {
+    loadSpreadSheetDataValues();
     if(rowIndex >= dataValues.length || rowIndex < 0) {
       throw new Error('Inexistent data for row ' + rowIndex);
     }
@@ -71,16 +78,20 @@ function SpreadsheetRepository(spreadsheetConfig) {
   }
 
   this.getDataByRowIndexNamed = function(metaData, rowIndex) {
-    
+    loadSpreadSheetDataValues();
     if(rowIndex >= dataValues.length || rowIndex < 0) {
       throw new Error('Inexistent data for row ' + rowIndex);
     }
-    
+   
+   var titleRowIndex = spreadsheetConfig.titleRowIndex;
    var resultObj = {};
     
     for(var property in metaData) {
       if(metaData.hasOwnProperty(property)) {
         for (var columnIndex = 0; columnIndex < dataValues[titleRowIndex].length; columnIndex++) {
+          // console.log('For property ' + property);
+          // console.log('Data values ');
+          // console.log(dataValues[titleRowIndex]);
           if(dataValues[titleRowIndex][columnIndex] === metaData[property]) {
             resultObj[property] = dataValues[rowIndex][columnIndex];
             break;
@@ -93,6 +104,8 @@ function SpreadsheetRepository(spreadsheetConfig) {
   }
 
   this.getAllDataRows = function(metaData) {
+    loadSpreadSheetDataValues();
+    var titleRowIndex = spreadsheetConfig.titleRowIndex;
     var dataRows = [];
 
     for (var rowIndex = titleRowIndex + 1; rowIndex < dataValues.length; rowIndex++) {
@@ -112,12 +125,14 @@ function SpreadsheetRepository(spreadsheetConfig) {
   }
 
   this.updateCellForGlober = function(globerEmail, cellUpdate) {
+      loadSpreadSheetDataValues();
       var rowIndex = findRowIndexByValueInColumn(globerEmail, spreadsheetConfig.emailColumnIndex);
       
       var cell = dataRange.getCell(rowIndex + 1, cellUpdate.column);
       cell.setValue(cellUpdate.value);
   }
+}
 
-  // TODO: Remove this side effect.
-  loadSpreadSheetDataValues();
+if((typeof module !== 'undefined') && (typeof module.exports !== 'undefined')) {
+    module.exports = SpreadsheetRepository;
 }
