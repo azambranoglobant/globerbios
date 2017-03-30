@@ -48,4 +48,6 @@ function ProfilePhotoUpdater(slideContent) {
     }
 }
 
-module.exports = ProfilePhotoUpdater;
+if((typeof module !== 'undefined') && (typeof module.exports !== 'undefined')) {
+    module.exports = ProfilePhotoUpdater;
+}
