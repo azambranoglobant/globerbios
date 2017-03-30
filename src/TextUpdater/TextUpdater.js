@@ -11,6 +11,28 @@ function TextUpdater(slideContent) {
         return undefined;
     }
 
+    var getUpdateTextRequest = function(element, newText) {
+        var currentRequest = [
+            {
+                'deleteText': {
+                    'objectId': element.objectId,
+                    textRange: {
+                        'type': 'FROM_START_INDEX',
+                        'startIndex': 0
+                    }
+                }
+            }, {
+                'insertText': {
+                    'objectId': element.objectId,
+                    'text': newText,
+                    'insertionIndex': 0
+                }
+            }
+        ];
+
+        return currentRequest;
+    }
+
     this.generate = function(metadata){
         var requests = [];
 
@@ -26,7 +48,7 @@ function TextUpdater(slideContent) {
                         var metaElement = findMetadataForPlaceHolder(metadata, textContent);
 
                         if (metaElement !== undefined) {
-                            requests.push(SlidesRepository.getUpdateTextRequest(element, metaElement.replacement));
+                            requests.push(getUpdateTextRequest(element, metaElement.replacement));
                         }
                     }
                 }
@@ -47,9 +69,9 @@ function TextUpdater(slideContent) {
                     var textElement = element.shape.text.textElements[j];
                     if (textElement.textRun != undefined) {
                         var textContent = textElement.textRun.content.trim().toUpperCase();
-
+                        
                         if (textContent == textPlaceHolder) {
-                            return SlidesRepository.getUpdateTextRequest(element, textReplacement);
+                            return getUpdateTextRequest(element, textReplacement);
                         }
                     }
                 }
@@ -57,3 +79,5 @@ function TextUpdater(slideContent) {
         }
     }
 }
+
+module.exports = TextUpdater;
