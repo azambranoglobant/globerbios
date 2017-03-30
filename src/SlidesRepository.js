@@ -100,31 +100,6 @@ var SlidesRepository = (function () {
     }
 
     /**
-     * TODO: Move or refactor. Out of the abstraction.
-    */
-    function getUpdateTextRequest(element, newText) {
-        var currentRequest = [
-            {
-                'deleteText': {
-                    'objectId': element.objectId,
-                    textRange: {
-                        'type': 'FROM_START_INDEX',
-                        'startIndex': 0
-                    }
-                }
-            }, {
-                'insertText': {
-                    'objectId': element.objectId,
-                    'text': newText,
-                    'insertionIndex': 0
-                }
-            }
-        ];
-
-        return currentRequest;
-    }
-
-    /**
      * TODO: Move or refactor. Out of the abstraction. 
      */
     var getUpdateImageRequest = function (slideId, element, googleDriveFile) {
