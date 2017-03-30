@@ -1,11 +1,15 @@
 // TODO: Rename to reflect the 'Photo directory API/service' style.
-var PhotoRepository = (function () {
+function PhotoRepository(DriveService) {
 
     var PHOTO_FOLDER_ID = '0B5Pvk3zKcgb0bnM1UjA1M2ZvdzQ';
 
+    if(DriveService === undefined && (typeof DriveApp !== 'undefined')) {
+        DriveService = DriveApp;
+    }
+
     function loadPhotos() {
 
-        var photoFolder = DriveApp.getFolderById(PHOTO_FOLDER_ID);
+        var photoFolder = DriveService.getFolderById(PHOTO_FOLDER_ID);
         var photos = photoFolder.getFiles();
         var photoArray = [];
         while (photos.hasNext()) {
@@ -19,7 +23,7 @@ var PhotoRepository = (function () {
         return photoArray;
     }
 
-    function findPhotoByEmail(email) {
+    this.findPhotoByEmail = function(email) {
         var photoData = loadPhotos();
         var nameBase = email
             .replace('@globant.com', '')
@@ -35,6 +39,8 @@ var PhotoRepository = (function () {
 
         return undefined;
     }
+};
 
-    return {findPhotoByEmail: findPhotoByEmail};
-})();
+if((typeof module !== 'undefined') && (typeof module.exports !== 'undefined')) {
+    module.exports = PhotoRepository;
+}
