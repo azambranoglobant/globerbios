@@ -32,7 +32,7 @@ function Sliderifier(sliderifyConfig) {
         var photoUpdater = new ProfilePhotoUpdater(templateSlideContent);
         var photoUpdateRequest = photoUpdater.generate(photoFile);
 
-        if(photoUpdateRequest !== null) contentChanges.push(photoUpdateRequest);
+        if(photoUpdateRequest !== undefined) contentChanges.push(photoUpdateRequest);
 
         // Step 4: Apply content Changes to the prepared presentation.
         SlidesRepository.sendSlideRequest(presentationFileInfo.id, contentChanges);
@@ -95,7 +95,7 @@ function Sliderifier(sliderifyConfig) {
             var photoUpdater = new ProfilePhotoUpdater(templateSlideContent);
             var photoUpdateRequest = photoUpdater.generate(photoFile);
 
-            if(photoUpdateRequest !== null) contentChanges.push(photoUpdateRequest);
+            if(photoUpdateRequest !== undefined) contentChanges.push(photoUpdateRequest);
 
             // Step 4.4: Apply content Changes to the slide.
             SlidesRepository.sendSlideRequest(presentationFileInfo.id, contentChanges);

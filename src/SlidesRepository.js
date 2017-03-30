@@ -99,37 +99,6 @@ var SlidesRepository = (function () {
         UrlFetchApp.fetch(url, params);
     }
 
-    /**
-     * TODO: Move or refactor. Out of the abstraction. 
-     */
-    var getUpdateImageRequest = function (slideId, element, googleDriveFile) {
-
-        var imageUrl = 'https://www.googleapis.com/drive/v3/files/' + googleDriveFile + '?alt=media&access_token=' + ScriptApp.getOAuthToken();
-
-        if (element === undefined || element.image === undefined || element.title !== '[FOTOGLOBER]') {
-            return undefined; //TODO: throw new Error('Invalid element');
-        }
-
-        var photoRequests = [
-            {
-                'createImage': {
-                    'url': imageUrl,
-                    'elementProperties': {
-                        'pageObjectId': slideId,
-                        'size': element.size,
-                        'transform': element.transform
-                    }
-                }
-            }, {
-                'deleteObject': {
-                    'objectId': element.objectId
-                }
-            }
-        ];
-
-        return photoRequests;
-    }
-
     return {
         getPresentation: getPresentation,
         getSlide: getSlide,
