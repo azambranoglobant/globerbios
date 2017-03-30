@@ -80,4 +80,6 @@ function TextUpdater(slideContent) {
     }
 }
 
-module.exports = TextUpdater;
+if((typeof module !== 'undefined') && (typeof module.exports !== 'undefined')) {
+    module.exports = TextUpdater;
+}
