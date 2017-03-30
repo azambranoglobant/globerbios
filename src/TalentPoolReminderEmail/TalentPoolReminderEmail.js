@@ -1,4 +1,8 @@
-function TalentPoolReminderEmail(){
+function TalentPoolReminderEmail(MailService){
+
+    if(MailService !== undefined && (typeof MailApp !== 'undefined')) {
+        MailService = MailApp;
+    }
 
     var getEmailBody = function (){
         
@@ -163,13 +167,17 @@ function TalentPoolReminderEmail(){
         return body;
     }
 
-    this.send = function(emailRecipients){
+    this.send = function(emailRecipients) {
         var emailBody = getEmailBody();
 
-        MailApp.sendEmail({
+        MailService.sendEmail({
             to: emailRecipients,
             subject: "[Request Info] CV & Bios",
             htmlBody: emailBody
         });
     }
+}
+
+if((typeof module !== 'undefined') && (typeof module.exports !== 'undefined')) {
+    module.exports = TalentPoolReminderEmail;
 }
