@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest",
     "tw": "jest --watch",
-    "coverage": "jest --coverage"
+    "cov": "jest --coverage"
   },
   "author": "Alan Zambrano",
   "license": "ISC",
@@ -18,7 +18,8 @@
   "jest": {
     "testEnvironment": "node",
     "collectCoverageFrom": [
-      "src/*.js"
+      "**/*.{js,jsx}", 
+      "!**/node_modules/**"
     ],
     "coverageThreshold": {
       "global": {
