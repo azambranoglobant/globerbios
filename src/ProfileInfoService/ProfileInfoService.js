@@ -1,8 +1,25 @@
-function ProfileInfoService() {
+function ProfileInfoService(talentPoolRepo, globerBiosRepo) {
 
-    var TALENT_POOL_DRIVE_ID = '1FOgt6rkq9fIFU_woYhTHw6wro__egIlPg-8ckfsmlGQ';
-    var GLOBER_BIOS_DRIVE_ID = '16yR0xcLovu-8OMR7TMLJih6SgviAYdD5mUYtpL8o9cY';
     var profileDataSeparator = ' ';
+
+    this.talentPoolRepo = talentPoolRepo;
+    if(this.talentPoolRepo === undefined) {
+        var TALENT_POOL_DRIVE_ID = '1FOgt6rkq9fIFU_woYhTHw6wro__egIlPg-8ckfsmlGQ';
+        this.talentPoolRepo = new SpreadsheetRepository({id: TALENT_POOL_DRIVE_ID, 
+                                                  lookupSheetIndex: 0, 
+                                                  titleRowIndex: 0, 
+                                                  emailColumnIndex: 3});
+    }
+
+    this.globerBiosRepo = globerBiosRepo;
+    if(this.globerBiosRepo === undefined) {
+        var GLOBER_BIOS_DRIVE_ID = '16yR0xcLovu-8OMR7TMLJih6SgviAYdD5mUYtpL8o9cY';
+        var globerBiosRepo = new SpreadsheetRepository({id: GLOBER_BIOS_DRIVE_ID, 
+                                                  lookupSheetIndex: 0, 
+                                                  titleRowIndex: 0, 
+                                                  emailColumnIndex: 1});
+    }
+    
 
     this.getGloberCompleteProfile = function(globerEmail) {
         
@@ -18,10 +35,7 @@ function ProfileInfoService() {
     }
 
     this.getTalentPoolProfile = function(globerEmail) {
-        var spreadSheetRepo = new SpreadsheetRepository({id: TALENT_POOL_DRIVE_ID, 
-                                                  lookupSheetIndex: 0, 
-                                                  titleRowIndex: 0, 
-                                                  emailColumnIndex: 3});
+        
 
         var talentPoolProfileMetadata = {
             globerId: 0,
@@ -34,15 +48,10 @@ function ProfileInfoService() {
             location: 9
         };
 
-        return spreadSheetRepo.getDataByEmail(talentPoolProfileMetadata, globerEmail);
+        return this.talentPoolRepo.getDataByEmail(talentPoolProfileMetadata, globerEmail);
     }
 
     this.getGloberBiosProfile = function(globerEmail) {
-        var spreadSheetRepo = new SpreadsheetRepository({id: GLOBER_BIOS_DRIVE_ID, 
-                                                  lookupSheetIndex: 0, 
-                                                  titleRowIndex: 0, 
-                                                  emailColumnIndex: 1});
-
         var globantProfileMetadata = {
             id: 0,
             email: 1,
@@ -63,6 +72,11 @@ function ProfileInfoService() {
             otherlanguages: 17
         };
 
-        return spreadSheetRepo.getDataByEmail(globantProfileMetadata, globerEmail);
+        return globerBiosRepo.getDataByEmail(globantProfileMetadata, globerEmail);
     }
+}
+
+if((typeof module !== 'undefined') && (typeof module.exports !== 'undefined')) {
+    module.exports = ProfileInfoService;
+    var merge = require('../Utilities/Utilities').merge;
 }

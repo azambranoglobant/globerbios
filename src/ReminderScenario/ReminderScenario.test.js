@@ -1,29 +1,6 @@
 const ReminderScenario = require('./ReminderScenario');
 const mockedTalentPoolRepo = require('../../mocking/mockedTalentPoolRepo');
-
-const mockedGloberBiosRepo = {
-    data: [
-        {
-            email: 'alan.zambrano@globant.com',
-            ts: new Date()
-        }, {
-            email: 'bruno.guardia@globant.com',
-            ts: new Date()
-        }, {
-            email: 'jose.valencia@globant.com',
-            ts: new Date()
-        }, {
-            email: 'sofia.galan@globant.com',
-            ts: new Date()
-        }, {
-            email: 'lucia.echenique@globant.com',
-            ts: new Date()
-        }
-    ],
-    getDataByEmail: function (metaData, email) {
-        return mockedGloberBiosRepo.data.find((element) => element.email === email);
-    }
-};
+const mockedGloberBiosRepo = require('../../mocking/mockedGloberBiosRepo');
 
 const mockedTalentPoolEmail = {
     sentEmail: undefined,
