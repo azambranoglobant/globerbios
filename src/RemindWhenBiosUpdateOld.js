@@ -3,7 +3,7 @@ function RemindWhenBiosUpdateOld(){
     var BENCH_START_TIME_LIMIT_IN_DAYS = 30;
     var thisClass = this;
 
-    this.filterGlobersByRule = function(talentPoolGlobers){
+    this.filterGlobersByRule = function(talentPoolGlobers) {
         var pendingTalentPoolGlobers = filterGlobersWithOldBenchStart(talentPoolGlobers);
         var globersNeedingCVReminder = determineGlobersWithOldCV(pendingTalentPoolGlobers);
         return globersNeedingCVReminder;

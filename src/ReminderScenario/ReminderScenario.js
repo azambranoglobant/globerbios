@@ -1,7 +1,29 @@
-function ReminderScenario() {
-}
+const getDaysDiffFromNow = require('../Utilities/Utilities').getDaysDiffFromNow;
+const merge = require('../Utilities/Utilities').merge;
 
-ReminderScenario.prototype.talentPoolEmail = {send: function(globersAsRecipients){ Logger.log(globersAsRecipients); }};
+function ReminderScenario(talentPoolRepo, globerBiosRepo, talentPoolEmail) {
+    this.talentPoolRepo = talentPoolRepo;
+    this.globerBiosRepo = globerBiosRepo;   
+    this.talentPoolEmail = talentPoolEmail;
+
+    if(this.talentPoolRepo === undefined) {
+        this.talentPoolRepo = new SpreadsheetRepository({id: '1FOgt6rkq9fIFU_woYhTHw6wro__egIlPg-8ckfsmlGQ', 
+                                                lookupSheetIndex: 0, 
+                                                titleRowIndex: 0,
+                                                emailColumnIndex: 3});
+    }
+
+    if(this.globerBiosRepo === undefined) {
+        this.globerBiosRepo = new SpreadsheetRepository({id: '16yR0xcLovu-8OMR7TMLJih6SgviAYdD5mUYtpL8o9cY', 
+                                                lookupSheetIndex: 0, 
+                                                titleRowIndex: 0, 
+                                                emailColumnIndex: 1});
+    }
+
+    if(this.talentPoolEmail === undefined) {
+        this.talentPoolEmail = new TalentPoolReminderEmail();
+    }
+}
 
 ReminderScenario.prototype.run = function() {
     try {
@@ -15,10 +37,6 @@ ReminderScenario.prototype.run = function() {
 }
 
 ReminderScenario.prototype.getTalentPoolGlobers = function() {
-    var spreadSheetRepo = new SpreadsheetRepository({id: '1FOgt6rkq9fIFU_woYhTHw6wro__egIlPg-8ckfsmlGQ', 
-                                                lookupSheetIndex: 0, 
-                                                titleRowIndex: 0});
-
     var metaData = {
         email: 3,
         firstName: 1,
@@ -28,7 +46,7 @@ ReminderScenario.prototype.getTalentPoolGlobers = function() {
         lastCvReminder: 32
     };
 
-    var talentPoolGlobers = spreadSheetRepo.getAllDataRows(metaData);
+    var talentPoolGlobers = this.talentPoolRepo.getAllDataRows(metaData);
 
     var filteredGlobers = [];
     for (var index = 0; index < talentPoolGlobers.length; index++) {
@@ -45,17 +63,13 @@ ReminderScenario.prototype.getTalentPoolGlobers = function() {
 }
 
 ReminderScenario.prototype.mergeWithGlobantBiosProfile = function(glober) {
-    var spreadSheetRepo = new SpreadsheetRepository({id: '16yR0xcLovu-8OMR7TMLJih6SgviAYdD5mUYtpL8o9cY', 
-                                                lookupSheetIndex: 0, 
-                                                titleRowIndex: 0, 
-                                                emailColumnIndex: 1});
-
     var globantProfileMetadata = {
         ts: 0,
         email: 1
     };
     
-    var globerProfile = spreadSheetRepo.getDataByEmail(globantProfileMetadata, glober.email);
+    var globerProfile = this.globerBiosRepo.getDataByEmail(globantProfileMetadata, glober.email);
+    
     return merge(glober, globerProfile);
 }
 
@@ -63,15 +77,10 @@ ReminderScenario.prototype.remindGlobers = function(globersNeedingCVReminder){
     var recipientsForReminderEmail = this.getGlobersAsEmailRecipients(globersNeedingCVReminder);
     this.talentPoolEmail.send(recipientsForReminderEmail);
 
-    var talentPoolSpreadSheet = new SpreadsheetRepository({id: '1FOgt6rkq9fIFU_woYhTHw6wro__egIlPg-8ckfsmlGQ', 
-                                                lookupSheetIndex: 0, 
-                                                titleRowIndex: 0, 
-                                                emailColumnIndex: 3});
-
     for (var globerIndex = 0; globerIndex < globersNeedingCVReminder.length; globerIndex++) {
         var glober = globersNeedingCVReminder[globerIndex];
         var timeStamp = new Date().toUTCString();
-        talentPoolSpreadSheet.updateCellForGlober(glober.email, { column: 33, value: timeStamp });
+        this.talentPoolRepo.updateCellForGlober(glober.email, { column: 33, value: timeStamp });
     }
 }
 
@@ -87,4 +96,8 @@ ReminderScenario.prototype.getGlobersAsEmailRecipients = function(pendingUpdateG
     }
 
     return commaSeparatedEmailRecipients;
-} 
+}
+
+if ((typeof module !== 'undefined') && (typeof module.exports !== 'undefined')) {
+    module.exports = ReminderScenario;
+}
