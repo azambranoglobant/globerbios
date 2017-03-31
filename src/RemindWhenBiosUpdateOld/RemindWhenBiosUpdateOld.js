@@ -1,3 +1,9 @@
+if ((typeof module !== 'undefined') && (typeof module.exports !== 'undefined')) {
+    var ReminderScenario = require('../ReminderScenario/ReminderScenario');
+    var getDaysDiffFromNow = require('../Utilities/Utilities').getDaysDiffFromNow;
+    module.exports = RemindWhenBiosUpdateOld;
+}
+
 function RemindWhenBiosUpdateOld(){
     var LAST_CVUPDATE_TIME_LIMIT_IN_DAYS = 30;
     var BENCH_START_TIME_LIMIT_IN_DAYS = 30;
