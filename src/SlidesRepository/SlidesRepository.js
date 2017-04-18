@@ -1,8 +1,17 @@
-var SlidesRepository = (function () {
+var SlidesRepository = function (FetchingService) {
 
     var BASE_URL = "https://slides.googleapis.com/v1/presentations/";
 
-    function getPresentation(presentationId) {
+    var oauthToken = 'DUMMY_TOKEN';
+    if((typeof ScriptApp !== 'undefined') && (typeof ScriptApp.getOAuthToken !== 'undefined')) {
+        oauthToken = ScriptApp.getOAuthToken();
+    }
+
+    if(FetchingService === undefined && (typeof UrlFetchApp !== 'undefined')) {
+        FetchingService = UrlFetchApp;
+    }
+
+    this.getPresentation = function (presentationId) {
         // CODE extracted from: https://ctrlq.org/code/20285-google-slides-api
         var apiUrl = BASE_URL + presentationId;
 
@@ -10,34 +19,34 @@ var SlidesRepository = (function () {
             method: "get",
             contentType: "application/json",
             headers: {
-                "Authorization": "Bearer " + ScriptApp.getOAuthToken()
+                "Authorization": "Bearer " + oauthToken
             },
             muteHttpExceptions: true
         };
 
-        var resp = UrlFetchApp.fetch(apiUrl, params);
+        var resp = FetchingService.fetch(apiUrl, params);
 
         return JSON.parse(resp.getContentText());
     }
 
-    function getSlide(presentationId, slideId) {
+    this.getSlide = function(presentationId, slideId) {
         var url = BASE_URL + presentationId + '/pages/' + slideId;
 
         var params = {
             method: "get",
             contentType: "application/json",
             headers: {
-                Authorization: 'Bearer ' + ScriptApp.getOAuthToken()
+                Authorization: 'Bearer ' + oauthToken
             },
             muteHttpExceptions: true
         };
 
         // returns a JSON response
-        var resp = UrlFetchApp.fetch(url, params);
+        var resp = FetchingService.fetch(url, params);
         return JSON.parse(resp.getContentText());
     }
 
-    function createPresentation(title) {
+    this.createPresentation = function(title) {
         var url = BASE_URL;
 
         // Make a POST request with form data.
@@ -47,14 +56,14 @@ var SlidesRepository = (function () {
             contentType: 'application/json',
             payload: formData,
             headers: {
-                'Authorization': 'Bearer ' + ScriptApp.getOAuthToken()
+                'Authorization': 'Bearer ' + oauthToken
             }
         };
 
-        UrlFetchApp.fetch(url, params);
+        FetchingService.fetch(url, params);
     }
 
-    function duplicateSlide(presentationId, slideId) {
+    this.duplicateSlide = function (presentationId, slideId) {
         var url = BASE_URL + presentationId + ':batchUpdate';
 
         var formData = {
@@ -72,15 +81,15 @@ var SlidesRepository = (function () {
             contentType: 'application/json',
             payload: JSON.stringify(formData),
             headers: {
-                'Authorization': 'Bearer ' + ScriptApp.getOAuthToken()
+                'Authorization': 'Bearer ' + oauthToken
             }
         };
 
-        var response = UrlFetchApp.fetch(url, params);
+        var response = FetchingService.fetch(url, params);
         return JSON.parse(response.getContentText());
     }
 
-    function updateSlides(presentationId, formData) {
+    this.sendSlideRequest = function(presentationId, formData) {
         if (formData == undefined || formData.length <= 0) 
             throw new Error('Invalid form data');
         
@@ -91,21 +100,15 @@ var SlidesRepository = (function () {
             contentType: 'application/json',
             payload: JSON.stringify({ requests: formData }),
             headers: {
-                'Authorization': 'Bearer ' + ScriptApp.getOAuthToken()
+                'Authorization': 'Bearer ' + oauthToken
             },
             muteHttpExceptions: true
         };
 
-        UrlFetchApp.fetch(url, params);
+        FetchingService.fetch(url, params);
     }
+};
 
-    return {
-        getPresentation: getPresentation,
-        getSlide: getSlide,
-        createPresentation: createPresentation,
-        duplicateSlide: duplicateSlide,
-        sendSlideRequest: updateSlides,
-        getUpdateTextRequest: getUpdateTextRequest,
-        getUpdateImageRequest: getUpdateImageRequest
-    };
-})();
+if ((typeof module !== 'undefined') && (typeof module.exports !== 'undefined')) {
+    module.exports = SlidesRepository;
+}
