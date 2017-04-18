@@ -37,6 +37,7 @@ describe('GetDaysDiffFromNow', () => {
 
         let dateOneMonthAgo = new Date();
         dateOneMonthAgo.setDate(dateOneMonthAgo.getDate() - daysAgo);
+        dateOneMonthAgo.setHours(0, 0, 0, 0);
 
         let daysDifference = getDaysDiffFromNow(dateOneMonthAgo);
         expect(daysDifference).toBe(daysAgo);
@@ -44,7 +45,16 @@ describe('GetDaysDiffFromNow', () => {
         daysAgo = 15;
         dateOneMonthAgo = new Date();
         dateOneMonthAgo.setDate(dateOneMonthAgo.getDate() - daysAgo);
+        dateOneMonthAgo.setHours(0, 0, 0, 0);
 
+        daysDifference = getDaysDiffFromNow(dateOneMonthAgo);
+        expect(daysDifference).toBe(daysAgo);
+
+        daysAgo = 31;
+        dateOneMonthAgo = new Date();
+        dateOneMonthAgo.setDate(dateOneMonthAgo.getDate() - daysAgo);
+        dateOneMonthAgo.setHours(0, 0, 0, 0);
+        
         daysDifference = getDaysDiffFromNow(dateOneMonthAgo);
         expect(daysDifference).toBe(daysAgo);
     });
@@ -52,17 +62,27 @@ describe('GetDaysDiffFromNow', () => {
     test('get correct difference in days ahead', () => {
         let daysAhead = 30;
 
-        let dateOneMonthAgo = new Date();
-        dateOneMonthAgo.setDate(dateOneMonthAgo.getDate() + daysAhead);
+        let dateOneMonthFromNow = new Date();
+        dateOneMonthFromNow.setDate(dateOneMonthFromNow.getDate() + daysAhead);
+        dateOneMonthFromNow.setHours(23, 59, 59, 59);
 
-        let daysDifference = getDaysDiffFromNow(dateOneMonthAgo);
-        expect(daysDifference).toBe(daysAhead - 1);
+        let daysDifference = getDaysDiffFromNow(dateOneMonthFromNow);
+        expect(daysDifference).toBe(daysAhead);
 
         daysAhead = 15;
-        dateOneMonthAgo = new Date();
-        dateOneMonthAgo.setDate(dateOneMonthAgo.getDate() + daysAhead);
+        dateOneMonthFromNow = new Date();
+        dateOneMonthFromNow.setDate(dateOneMonthFromNow.getDate() + daysAhead);
+        dateOneMonthFromNow.setHours(23, 59, 59, 59);
 
-        daysDifference = getDaysDiffFromNow(dateOneMonthAgo);
-        expect(daysDifference).toBe(daysAhead - 1);
+        daysDifference = getDaysDiffFromNow(dateOneMonthFromNow);
+        expect(daysDifference).toBe(daysAhead);
+
+        daysAhead = 31;
+        dateOneMonthFromNow = new Date();
+        dateOneMonthFromNow.setDate(dateOneMonthFromNow.getDate() + daysAhead);
+        dateOneMonthFromNow.setHours(23, 59, 59, 59);
+        
+        daysDifference = getDaysDiffFromNow(dateOneMonthFromNow);
+        expect(daysDifference).toBe(daysAhead);
     });
 });
