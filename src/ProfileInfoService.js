@@ -21,7 +21,7 @@ function ProfileInfoService() {
         var spreadSheetRepo = new SpreadsheetRepository({id: TALENT_POOL_DRIVE_ID, 
                                                   lookupSheetIndex: 0, 
                                                   titleRowIndex: 0, 
-                                                  emailColumnIndex: 3});
+                                                  emailColumnIndex: 1});
 
         var talentPoolProfileMetadata = {
             globerId: 0,
