@@ -25,13 +25,13 @@ function ProfileInfoService() {
 
         var talentPoolProfileMetadata = {
             globerId: 0,
-            firstName: 1,
+            firstName: 0,
             lastName: 2,
             birthDate: 4,
             entryDate: 5,
             role: 6,
-            seniority: 7,
-            location: 9
+            seniority: 6,
+            location: 2
         };
 
         return spreadSheetRepo.getDataByEmail(talentPoolProfileMetadata, globerEmail);

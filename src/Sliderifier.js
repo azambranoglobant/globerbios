@@ -42,14 +42,21 @@ function Sliderifier(sliderifyConfig) {
 
     // TODO: Refactor this method into a TeamSliderifier class.
     this.sliderifyTeam = function(teamBiosData) {
-
+      var notFoundGlobers = [];
+      
         // Step 1: Load Profile information.
         var team = teamBiosData.team;
         var profiles = [];
         for(i = 0; i < team.length; i++) {
+          try{
             var globerProfile = profileInfoService.getGloberCompleteProfile(team[i].email);
             var mergedProfile = merge(team[i], globerProfile);
             profiles.push(mergedProfile);
+          }catch(e)
+          {
+            Logger.log(e);
+            notFoundGlobers.push(team[i].email);
+          }
         }
 
         // Step 2: Prepare new Presentation.
@@ -100,8 +107,11 @@ function Sliderifier(sliderifyConfig) {
             // Step 4.4: Apply content Changes to the slide.
             SlidesRepository.sendSlideRequest(presentationFileInfo.id, contentChanges);
         }
-
-        return presentationFileInfo.id;
+      
+      var result = {}; 
+      result.presentationId = presentationFileInfo.id;
+      result.notFoundGlobers = notFoundGlobers;
+      return result;
     }
     
     var getKeyAspectsText = function(profile){
