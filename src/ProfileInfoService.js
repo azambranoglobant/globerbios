@@ -3,13 +3,35 @@ function ProfileInfoService() {
     var TALENT_POOL_DRIVE_ID = '18Lj3jzw6mgkhX1_lyXQfTsKOTu4-ujvAsrEHOxszy0Q';
     var GLOBER_BIOS_DRIVE_ID = '16yR0xcLovu-8OMR7TMLJih6SgviAYdD5mUYtpL8o9cY';
     var profileDataSeparator = ' ';
-
+    
     this.getGloberCompleteProfile = function(globerEmail) {
-        
-        var globerBiosProfile = this.getGloberBiosProfile(globerEmail);
-        var talentPoolProfile = this.getTalentPoolProfile(globerEmail);
-
-        var globerProfile = merge(globerBiosProfile , talentPoolProfile);
+      var talentPoolProfile = this.getTalentPoolProfile(globerEmail);
+      var globerBiosProfile = null;
+      
+      try {
+        globerBiosProfile = this.getGloberBiosProfile(globerEmail);
+      } catch(e) {
+        globerBiosProfile = {
+            id: '',
+            career: '',
+            programming: '',
+            jsFrameworks: '',
+            databases: '',
+            mvcFrameworkds: '',
+            presentation: '',
+            mobile: '',
+            bigData: '',
+            testing: '',
+            other: '',
+            tools: '',
+            english: '',
+            spanish: '',
+            portuguese: '',
+            otherlanguages: ''
+        };
+      }
+      
+        var globerProfile = merge(talentPoolProfile, globerBiosProfile);
 
         globerProfile.fullName = globerProfile.firstName + profileDataSeparator + globerProfile.lastName;
         globerProfile.fullRole = globerProfile.role + profileDataSeparator + globerProfile.seniority;
@@ -19,19 +41,20 @@ function ProfileInfoService() {
 
     this.getTalentPoolProfile = function(globerEmail) {
         var spreadSheetRepo = new SpreadsheetRepository({id: TALENT_POOL_DRIVE_ID, 
-                                                  lookupSheetIndex: 0, 
+                                                  lookupSheetIndex: 19, 
                                                   titleRowIndex: 0, 
-                                                  emailColumnIndex: 1});
+                                                  emailColumnIndex: 3});
 
         var talentPoolProfileMetadata = {
             globerId: 0,
-            firstName: 0,
+            firstName: 1,
             lastName: 2,
+            email: 3,
             birthDate: 4,
             entryDate: 5,
             role: 6,
-            seniority: 6,
-            location: 2
+            seniority: 7,
+            location: 9
         };
 
         return spreadSheetRepo.getDataByEmail(talentPoolProfileMetadata, globerEmail);
@@ -45,7 +68,6 @@ function ProfileInfoService() {
 
         var globantProfileMetadata = {
             id: 0,
-            email: 1,
             career: 2,
             programming: 3,
             jsFrameworks: 4,
